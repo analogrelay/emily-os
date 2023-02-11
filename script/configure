@@ -1,0 +1,37 @@
+#!/bin/bash
+#/ Usage: script/configure [--arch <arch>] [--board <board>]
+#/ Prepares the repo for the specified target arch and board
+#/ Options:
+#/   --arch <arch>    Target architecture (default: aarch64)
+#/   --board <board>  Target board (default: raspi3)
+source_dir="$( cd -P "$( dirname "$0" )" >/dev/null 2>&1 && pwd )"
+root_dir=$(cd $source_dir && cd ../ && pwd)
+cd $root_dir
+source script/helpers/_utils.sh
+
+# Parse command line arguments
+arch=aarch64
+board=raspi3
+while [[ $# -gt 0 ]]; do
+    key="$1"
+    shift
+    case "$key" in
+        --arch)
+            arch="$1"
+            shift
+            ;;
+        --board)
+            board="$1"
+            shift
+            ;;
+        *)
+            fatal "Unknown argument: $key"
+            ;;
+    esac
+done
+
+echo "Configuring for $arch / $board ..."
+
+[ ! -d ".config" ] && mkdir .config
+echo "$arch" > .config/arch
+echo "$board" > .config/board

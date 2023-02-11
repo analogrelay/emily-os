@@ -1,0 +1,1 @@
+QEMU_MACHINE_ARGS="-M raspi3"
