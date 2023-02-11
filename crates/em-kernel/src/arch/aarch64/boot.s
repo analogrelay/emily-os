@@ -1,4 +1,4 @@
-// Copied from: https://github.com/rust-embedded/rust-raspberrypi-OS-tutorials/blob/ac3ea0e616ccf1da6ac83206490e50034ee35072/07_timestamps/src/_arch/aarch64/cpu/boot.s
+// Copied from: https://github.com/rust-embedded/rust-raspberrypi-OS-tutorials/blob/ac3ea0e616ccf1da6ac83206490e50034ee35072/09_privilege_level/src/_arch/aarch64/cpu/boot.s
 
 // SPDX-License-Identifier: MIT OR Apache-2.0
 //
@@ -29,11 +29,16 @@
 // fn _start()
 //------------------------------------------------------------------------------
 _start:
+	// Only proceed if the core executes in EL2. Park it otherwise.
+	mrs	x0, CurrentEL
+	cmp	x0, {CONST_CURRENTEL_EL2}
+	b.ne	.L_parking_loop
+
 	// Only proceed on the boot core. Park it otherwise.
-	mrs	x0, MPIDR_EL1
-	and	x0, x0, {CONST_CORE_ID_MASK}
-	ldr	x1, BOOT_CORE_ID      // provided by bsp/__board_name__/cpu.rs
-	cmp	x0, x1
+	mrs	x1, MPIDR_EL1
+	and	x1, x1, {CONST_CORE_ID_MASK}
+	ldr	x2, BOOT_CORE_ID      // provided by bsp/__board_name__/cpu.rs
+	cmp	x1, x2
 	b.ne	.L_parking_loop
 
 	// If execution reaches here, it is the boot core.
@@ -50,7 +55,7 @@ _start:
 
 	// Prepare the jump to Rust code.
 .L_prepare_rust:
-	// Set the stack pointer.
+	// Set the stack pointer. This ensures that any code in EL2 that needs the stack will work.
 	ADR_REL	x0, __boot_core_stack_end_exclusive
 	mov	sp, x0
 
@@ -62,7 +67,7 @@ _start:
 	b.eq	.L_parking_loop
 	str	w2, [x1]
 
-	// Jump to Rust code.
+	// Jump to Rust code. x0 holds the function argument provided to _enter_kernel().
 	b	_enter_kernel
 
 	// Infinitely wait for events (aka "park the core").

@@ -1,4 +1,4 @@
-use crate::{error::Error, sync::Mutex, println, info};
+use crate::{error::Error, sync::Mutex, info};
 
 // TODO: Bump allocator and dynamic allocation!
 const MAX_DRIVERS: usize = 5;

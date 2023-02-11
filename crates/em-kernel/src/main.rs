@@ -9,6 +9,8 @@
 
 use core::time::Duration;
 
+use crate::exception::PrivilegeLevel;
+
 mod panic;
 mod arch;
 mod board;
@@ -17,6 +19,7 @@ mod sync;
 mod error;
 mod driver;
 mod time;
+mod exception;
 
 /// Kernel Entry Point.
 ///
@@ -35,14 +38,16 @@ unsafe fn kenter() -> ! {
 }
 
 fn kmain() -> ! {
-    use console::console;
-
     info!(
         "Emily version {}",
         env!("CARGO_PKG_VERSION")
     );
-    info!("Running on: {}", board::BOARD_NAME);
-    info!("Chars written: {}", console().chars_written());
+    info!("Board: {}", board::BOARD_NAME);
+
+    let privl = PrivilegeLevel::current();
+    info!("Current Privilege Level: {} - {}", privl.kind(), privl.name());
+
+    info!("Timer resolution: {}ns", time::keeper().resolution().as_nanos());
 
     loop {
         info!("Sleeping 1 second");
