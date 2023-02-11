@@ -1,8 +1,13 @@
 #![feature(asm_const)]
 #![feature(format_args_nl)]
 #![feature(panic_info_message)]
+#![feature(const_option)]
+#![feature(nonzero_min_max)]
+#![feature(unchecked_math)]
 #![no_main]
 #![no_std]
+
+use core::time::Duration;
 
 mod panic;
 mod arch;
@@ -11,6 +16,7 @@ mod console;
 mod sync;
 mod error;
 mod driver;
+mod time;
 
 /// Kernel Entry Point.
 ///
@@ -31,22 +37,15 @@ unsafe fn kenter() -> ! {
 fn kmain() -> ! {
     use console::console;
 
-    println!(
+    info!(
         "Emily version {}",
         env!("CARGO_PKG_VERSION")
     );
-    println!("Running on: {}", board::BOARD_NAME);
+    info!("Running on: {}", board::BOARD_NAME);
+    info!("Chars written: {}", console().chars_written());
 
-    println!("Drivers:");
-    driver::manager().dump();
-
-    println!("Chars written: {}", console().chars_written());
-    println!("Echoing input now");
-
-    // Discard any spurious received characters before going into echo mode.
-    console().clear_rx();
     loop {
-        let c = console().read_char();
-        console().write_char(c);
+        info!("Sleeping 1 second");
+        time::keeper().spin_for(Duration::from_secs(1));
     }
 }

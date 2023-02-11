@@ -1,4 +1,4 @@
-// Copied https://github.com/rust-embedded/rust-raspberrypi-OS-tutorials/blob/ac3ea0e616ccf1da6ac83206490e50034ee35072/02_runtime_init/src/_arch/aarch64/cpu/boot.s
+// Copied from: https://github.com/rust-embedded/rust-raspberrypi-OS-tutorials/blob/ac3ea0e616ccf1da6ac83206490e50034ee35072/07_timestamps/src/_arch/aarch64/cpu/boot.s
 
 // SPDX-License-Identifier: MIT OR Apache-2.0
 //
@@ -53,6 +53,14 @@ _start:
 	// Set the stack pointer.
 	ADR_REL	x0, __boot_core_stack_end_exclusive
 	mov	sp, x0
+
+	// Read the CPU's timer counter frequency and store it in ARCH_TIMER_COUNTER_FREQUENCY.
+	// Abort if the frequency read back as 0.
+	ADR_REL	x1, ARCH_TIMER_COUNTER_FREQUENCY // provided by aarch64/time.rs
+	mrs	x2, CNTFRQ_EL0
+	cmp	x2, xzr
+	b.eq	.L_parking_loop
+	str	w2, [x1]
 
 	// Jump to Rust code.
 	b	_enter_kernel

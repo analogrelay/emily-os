@@ -1,4 +1,4 @@
-use crate::{error::Error, sync::Mutex, println};
+use crate::{error::Error, sync::Mutex, println, info};
 
 // TODO: Bump allocator and dynamic allocation!
 const MAX_DRIVERS: usize = 5;
@@ -85,13 +85,11 @@ impl DriverManager {
                 }
             }
         });
-    }
 
-    pub fn dump(&self) {
-        let mut i: usize = 1;
+        // The drivers are part of how we print to the console, so we had to initialize them first.
+        // Now that we've done so, we can log the ones we've initialized
         self.for_each_descriptor(|descriptor| {
-            println!("      {}. {}", i, descriptor.driver.name());
-            i += 1;
+            info!("Initialized driver '{}'", descriptor.driver.name())
         });
     }
 
