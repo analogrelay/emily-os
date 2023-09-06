@@ -42,3 +42,6 @@ kernel-bin: kernel-elf
 .PHONY: kernel-elf
 kernel-elf:
 	RUSTFLAGS="$(RUSTFLAGS)" $(RUSTC) -p em-kernel
+
+rust-toolchain.toml: build/rust-toolchain.toml.base .config/arch .config/board
+	sed -e 's/@TARGET@/$(TARGET)/' $< > $@

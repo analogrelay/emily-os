@@ -9,8 +9,10 @@ source script/helpers/_utils.sh
 # Read config
 source script/helpers/load_config.sh
 
-docker run -it --rm -v "$root_dir:/work" -w /work rustembedded/osdev-utils:2021.12 \
+echo "Launching QEMU ..."
+docker run -it --rm -v "$root_dir:/work" -p 9999:9999 -w /work rustembedded/osdev-utils:2021.12 \
     $QEMU_CMD \
     $QEMU_MACHINE_ARGS \
     -display none -serial stdio \
+    -monitor telnet:localhost:9999,server \
     -kernel target/img/kernel-$arch-$board.img

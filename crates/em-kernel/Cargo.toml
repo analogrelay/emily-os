@@ -13,8 +13,6 @@ board_raspi4 = ["tock-registers"]
 name = "kernel"
 path = "src/main.rs"
 
-[dependencies]
-
 [dependencies.tock-registers]
 version = "0.8.1"
 default-features = false

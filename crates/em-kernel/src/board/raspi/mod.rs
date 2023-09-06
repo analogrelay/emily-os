@@ -4,9 +4,9 @@ use crate::error::Error;
 
 pub mod cpu;
 
-mod devices;
-mod memory;
-mod bcm;
+pub mod devices;
+pub mod memory;
+pub mod bcm;
 
 #[cfg(feature = "board_raspi3")]
 pub const BOARD_NAME: &str = "Raspberry Pi 3";

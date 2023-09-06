@@ -1,0 +1,7 @@
+[toolchain]
+channel = "nightly"
+profile = "default"
+components = [
+    "llvm-tools-preview"
+]
+targets = [ "@TARGET@" ]

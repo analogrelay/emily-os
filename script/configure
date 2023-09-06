@@ -24,6 +24,10 @@ while [[ $# -gt 0 ]]; do
             board="$1"
             shift
             ;;
+        --help|-?)
+            grep '^#/' <"$0" | cut -c4-
+            exit 0
+            ;;
         *)
             fatal "Unknown argument: $key"
             ;;
@@ -35,3 +39,5 @@ echo "Configuring for $arch / $board ..."
 [ ! -d ".config" ] && mkdir .config
 echo "$arch" > .config/arch
 echo "$board" > .config/board
+
+make rust-toolchain.toml
